@@ -31,7 +31,7 @@
 <!-- Add a screenshot or GIF here, e.g.:
 <p align="center"><img src="docs/screenshot.png" alt="HTTP FreeKit traffic view" width="900"></p>
 -->
----
+
 ## Table of contents
 
 - [Overview](#overview)
