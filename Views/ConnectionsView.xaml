@@ -1,0 +1,71 @@
+<UserControl x:Class="HttpFreeKit.Views.ConnectionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             IsVisibleChanged="OnVisibleChanged">
+    <Grid Margin="16,8,16,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Margin="0,0,0,8">
+            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock x:Name="CountText" Text="0 connexion" Opacity="0.7" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                <CheckBox x:Name="EstablishedCheck" Content="Établies uniquement" MinWidth="0"
+                          Checked="Filter_Changed" Unchecked="Filter_Changed"/>
+            </StackPanel>
+            <TextBox x:Name="FilterBox" Margin="0,0,16,0"
+                     ui:ControlHelper.PlaceholderText="Ex. process:example.exe remote:127.0.0.1"
+                     ToolTip="Filtres : process, pid, local, remote, address, protocol, state, port, localport, remoteport. Combinez les critères ; les valeurs avec espaces peuvent être entre guillemets."
+                     TextChanged="Filter_TextChanged"/>
+        </DockPanel>
+
+        <Border Grid.Row="1" Style="{StaticResource Card}" CornerRadius="8" Padding="0" ClipToBounds="True">
+        <Grid>
+        <DataGrid x:Name="ConnGrid" Style="{StaticResource FlatGrid}" AutoGenerateColumns="False" IsReadOnly="True"
+                  SelectionMode="Single" CanUserAddRows="False" HeadersVisibility="Column"
+                  GridLinesVisibility="None" FontSize="12" EnableRowVirtualization="True">
+            <DataGrid.ContextMenu>
+                <ContextMenu Opened="ConnectionsContextMenu_Opened">
+                    <MenuItem Header="Copier l'adresse distante" Click="Ctx_CopyRemote"/>
+                    <MenuItem Header="Copier l'adresse locale" Click="Ctx_CopyLocal"/>
+                    <Separator/>
+                    <MenuItem Header="Voir les échanges hexadécimaux via HTTP FreeKit…" Click="Ctx_ViewHex"/>
+                    <Separator/>
+                    <MenuItem Header="Ouvrir l'emplacement de l'application" Click="Ctx_OpenFolder"/>
+                    <MenuItem Header="Bloquer cette application (pare-feu)…" Click="Ctx_BlockApp"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Application" Width="190">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Image Source="{Binding ProcessIcon}" Width="20" Height="20"
+                                       Margin="8,0,8,0" Stretch="Uniform"/>
+                                <TextBlock Text="{Binding Process}" VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="PID" Binding="{Binding Pid}" Width="70"/>
+                <DataGridTextColumn Header="Proto" Binding="{Binding Protocol}" Width="65"/>
+                <DataGridTextColumn Header="Adresse locale" Binding="{Binding Local}" Width="*"/>
+                <DataGridTextColumn Header="Adresse distante" Binding="{Binding Remote}" Width="*"/>
+                <DataGridTextColumn Header="État" Binding="{Binding State}" Width="120"/>
+                <DataGridTextColumn Header="Vue depuis" Binding="{Binding SinceText}" Width="95"/>
+            </DataGrid.Columns>
+        </DataGrid>
+            <TextBlock x:Name="EmptyText" Text="No connections found" HorizontalAlignment="Center"
+                       VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontSize="14"
+                       IsHitTestVisible="False" Visibility="Collapsed"/>
+        </Grid>
+        </Border>
+
+        <TextBlock Grid.Row="2" Margin="0,10,0,0" Opacity="0.65" TextWrapping="Wrap"
+                   Text="Toutes les connexions TCP/UDP de la machine, actualisées toutes les 1,5 s. Les icônes viennent de l’application ou, si indisponible, du type de fichier associé. Clic droit sur une connexion TCP vers HTTP FreeKit pour ouvrir sa timeline d’échanges HTTP(S) ; sélectionnez un échange pour l’inspecter sans être déplacé par les suivants."/>
+    </Grid>
+</UserControl>

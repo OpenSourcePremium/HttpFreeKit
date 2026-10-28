@@ -1,0 +1,51 @@
+# Build and publish outputs
+bin/
+obj/
+dist/
+publish/
+artifacts/
+TestResults/
+
+# Visual Studio and IDE-local files
+.vs/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local application data and captures
+.httpfreekit/
+**/.httpfreekit/
+captures/
+traffic/
+*.har
+*.har.json
+*.pcap
+*.pcapng
+
+# Certificates and private keys
+*.pfx
+*.p12
+*.key
+*.pem
+*.cer
+*.crt
+**/rootCert.*
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+secrets.json
+secrets.*.json
+*.secrets.json
+appsettings.Local.json
+appsettings.*.Local.json
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+Desktop.ini

@@ -1,0 +1,360 @@
+<Window x:Class="HttpFreeKit.Views.HexExchangeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:views="clr-namespace:HttpFreeKit.Views"
+        Title="Échanges hexadécimaux · Live" Width="1100" Height="720"
+        MinWidth="900" MinHeight="560" WindowStartupLocation="CenterOwner"
+        WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize"
+        Background="Transparent" Foreground="{DynamicResource AppForegroundBrush}"
+        StateChanged="Window_StateChanged">
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="42" ResizeBorderThickness="6" GlassFrameThickness="0"
+                            CornerRadius="12" UseAeroCaptionButtons="False"/>
+    </shell:WindowChrome.WindowChrome>
+    <Window.Resources>
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,7"/>
+        </Style>
+        <Style x:Key="HexTextBox" TargetType="TextBox">
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="AcceptsReturn" Value="True"/>
+            <Setter Property="TextWrapping" Value="NoWrap"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}"/>
+            <Setter Property="IsTabStop" Value="True"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+        </Style>
+        <Style x:Key="DecodedTextBox" TargetType="TextBox" BasedOn="{StaticResource HexTextBox}">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+        </Style>
+        <Style x:Key="WindowControlButton" TargetType="Button">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Margin" Value="3,0,0,0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}"
+                                CornerRadius="7" SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource TitleBarHoverBrush}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="Tag" Value="close"/>
+                                </MultiTrigger.Conditions>
+                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </MultiTrigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border x:Name="WindowFrame" Background="{DynamicResource BgBrush}" CornerRadius="12"
+            ClipToBounds="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="42"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}"
+                CornerRadius="11,11,0,0"
+                BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1">
+            <Grid Margin="16,0,10,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="WindowTitleText" VerticalAlignment="Center" FontSize="13"
+                           FontWeight="SemiBold" Text="HTTP FreeKit · Live connection"/>
+                <Button Grid.Column="1" Click="Minimize_Click" Style="{StaticResource WindowControlButton}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        ToolTip="Minimize" AutomationProperties.Name="Minimize">
+                    <Grid Width="16" Height="16">
+                        <Path Data="M 2,8 H 14" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                              StrokeThickness="1.5" StrokeStartLineCap="Round" Stretch="None"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </Button>
+                <Button x:Name="MaximizeButton" Grid.Column="2" Click="Maximize_Click"
+                        Style="{StaticResource WindowControlButton}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        ToolTip="Maximize" AutomationProperties.Name="Maximize">
+                    <Grid Width="16" Height="16">
+                        <Path x:Name="GlyphMax" Data="M 3,3 H 13 V 13 H 3 Z"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                              StrokeThickness="1.3" StrokeLineJoin="Round" Stretch="None"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </Button>
+                <Button Grid.Column="3" Click="Close_Click" Tag="close"
+                        Style="{StaticResource WindowControlButton}"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        ToolTip="Close" AutomationProperties.Name="Close">
+                    <Grid Width="16" Height="16">
+                        <Path Width="12" Height="12" Data="M 1,1 L 11,11 M 11,1 L 1,11"
+                              Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"
+                              StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Stretch="Fill"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                </Button>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="1" Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="ConnectionText" Margin="0,0,0,10" FontSize="17"
+                   FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+
+        <Border Grid.Row="1" Style="{StaticResource Card}" Margin="0,0,0,10" Padding="10">
+            <DockPanel LastChildFill="True">
+                <TextBlock x:Name="ExchangeCount" DockPanel.Dock="Right" Margin="12,0,0,0"
+                           FontSize="11" Opacity="0.7" VerticalAlignment="Center"/>
+                <TextBlock x:Name="InfoText" FontSize="12" Opacity="0.82"
+                           TextWrapping="Wrap"/>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="280" MinWidth="230"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*" MinWidth="480"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource Card}" Padding="0" ClipToBounds="True">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid Margin="12,10,12,7">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="TimelineTitle" Text="TIMELINE" FontSize="10"
+                                   FontWeight="SemiBold" Foreground="{DynamicResource MutedBrush}"/>
+                        <TextBlock x:Name="TimelineHint" Grid.Column="2" FontSize="10"
+                                   Opacity="0.58" Margin="8,0,0,0" TextTrimming="CharacterEllipsis"/>
+                    </Grid>
+                    <ListBox x:Name="ExchangeList" Grid.Row="1" ItemsSource="{Binding Exchanges}"
+                             SelectionChanged="ExchangeList_SelectionChanged"
+                             Background="Transparent" BorderThickness="0" Padding="6,0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                             VirtualizingPanel.IsVirtualizing="True"
+                             VirtualizingPanel.VirtualizationMode="Recycling"
+                             ScrollViewer.CanContentScroll="True">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0,0,0,5"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="ListBoxItem">
+                                            <Border x:Name="ItemBorder" Background="{TemplateBinding Background}"
+                                                    CornerRadius="6" Padding="10,8">
+                                                <ContentPresenter/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="ItemBorder" Property="Background"
+                                                            Value="{DynamicResource Surface2Brush}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="True">
+                                                    <Setter TargetName="ItemBorder" Property="Background"
+                                                            Value="{DynamicResource DataGridSelectionBrush}"/>
+                                                    <Setter Property="Foreground"
+                                                            Value="{DynamicResource AppForegroundBrush}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Method}" FontFamily="Consolas"
+                                                   FontSize="11" FontWeight="Bold"
+                                                   Foreground="{DynamicResource AccentBrush}"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Target}" Margin="9,0,6,0"
+                                                   FontSize="11" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding TimeText}" FontFamily="Consolas"
+                                                   FontSize="10" Opacity="0.62"/>
+                                    </Grid>
+                                    <Grid Grid.Row="1" Margin="0,5,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding RequestLine}" FontFamily="Consolas"
+                                                   FontSize="10" Opacity="0.62"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <Border Grid.Column="1" Padding="6,2" CornerRadius="8"
+                                                Background="{DynamicResource Surface2Brush}">
+                                            <TextBlock Text="{Binding Result}" FontSize="10"
+                                                       FontWeight="SemiBold"/>
+                                        </Border>
+                                    </Grid>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Row="1" x:Name="EmptyState" Margin="16"
+                                IsHitTestVisible="False">
+                        <TextBlock x:Name="EmptyTitle" FontSize="12" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" TextAlignment="Center"/>
+                        <TextBlock x:Name="EmptyDescription" Margin="0,5,0,0" FontSize="11"
+                                   Opacity="0.65" TextAlignment="Center" TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource Card}" Padding="14" ClipToBounds="True">
+                <Grid x:Name="DetailPanel" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Margin="0,0,0,12">
+                        <TextBlock x:Name="SelectedTitle" FontSize="15" FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis"/>
+                        <TextBlock x:Name="SelectedRequestLine" Margin="0,4,0,0"
+                                   FontFamily="Consolas" FontSize="10" Opacity="0.66"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Padding="11" CornerRadius="7" Background="{DynamicResource BgBrush}"
+                                BorderBrush="{DynamicResource LineBrush}" BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock x:Name="RequestPaneTitle" Text="REQUÊTE"
+                                           Style="{StaticResource SectionTitle}"/>
+                                <TextBlock x:Name="RequestAddress" Grid.Row="1" Margin="0,0,0,10"
+                                           FontFamily="Consolas" FontSize="10" TextWrapping="Wrap"/>
+                                <Grid Grid.Row="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <DockPanel Margin="0,0,0,5">
+                                    <TextBlock x:Name="HexLabel" Text="HEX · ASCII"
+                                               Style="{StaticResource SectionTitle}"/>
+                                    </DockPanel>
+                                    <views:BodyPreview x:Name="RequestHexPreview" Grid.Row="1"
+                                                       IsBinary="True" ContentType="application/octet-stream"/>
+                                </Grid>
+                                <TextBlock x:Name="DecodedLabel" Grid.Row="3" Margin="0,10,0,5"
+                                           Text="DÉCODÉ" Style="{StaticResource SectionTitle}"/>
+                                <TextBox x:Name="RequestDecoded" Grid.Row="4"
+                                         Style="{StaticResource DecodedTextBox}"/>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="2" Padding="11" CornerRadius="7" Background="{DynamicResource BgBrush}"
+                                BorderBrush="{DynamicResource LineBrush}" BorderThickness="1">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="2*"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock x:Name="ResponsePaneTitle" Text="RÉPONSE"
+                                           Style="{StaticResource SectionTitle}"/>
+                                <TextBlock x:Name="ResponseAddress" Grid.Row="1" Margin="0,0,0,10"
+                                           FontFamily="Consolas" FontSize="10" TextWrapping="Wrap"/>
+                                <Grid Grid.Row="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <DockPanel Margin="0,0,0,5">
+                                        <TextBlock x:Name="ResponseHexLabel" Text="HEX · ASCII"
+                                                   Style="{StaticResource SectionTitle}"/>
+                                    </DockPanel>
+                                    <views:BodyPreview x:Name="ResponseHexPreview" Grid.Row="1"
+                                                       IsBinary="True" ContentType="application/octet-stream"/>
+                                </Grid>
+                                <TextBlock x:Name="ResponseDecodedLabel" Grid.Row="3" Margin="0,10,0,5"
+                                           Text="DÉCODÉ" Style="{StaticResource SectionTitle}"/>
+                                <TextBox x:Name="ResponseDecoded" Grid.Row="4"
+                                         Style="{StaticResource DecodedTextBox}"/>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <TextBlock x:Name="FooterText" Grid.Row="3" Margin="2,10,0,0" FontSize="11"
+                   Opacity="0.62" TextWrapping="Wrap"/>
+        </Grid>
+    </Grid>
+    </Border>
+</Window>

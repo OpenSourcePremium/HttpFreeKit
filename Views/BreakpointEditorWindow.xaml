@@ -1,0 +1,83 @@
+<Window x:Class="HttpFreeKit.Views.BreakpointEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:views="clr-namespace:HttpFreeKit.Views"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        Title="Breakpoint" Width="780" Height="720" MinWidth="620" MinHeight="520"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{DynamicResource BgBrush}" Foreground="{DynamicResource AppForegroundBrush}">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="0,0,0,14">
+            <TextBlock x:Name="TitleText" FontSize="16" FontWeight="SemiBold"/>
+            <TextBlock x:Name="DescriptionText"
+                       Text="Local development traffic only — edit the message, then forward or abandon it."
+                       Margin="0,5,0,0" Opacity="0.72" TextWrapping="Wrap"/>
+            <TextBlock x:Name="UrlText" Margin="0,5,0,0" FontFamily="Consolas"
+                       Foreground="{DynamicResource AppForegroundSecondaryBrush}" TextTrimming="CharacterEllipsis"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" MinHeight="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*" MinHeight="100"/>
+                <RowDefinition Height="3*" MinHeight="100"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <DockPanel Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Content="Remove selected" Click="RemoveHeader_Click"
+                            Padding="10,4"/>
+                    <Button Content="+ Add header" Click="AddHeader_Click" Padding="10,4"
+                            HorizontalAlignment="Left"/>
+                </DockPanel>
+                <DataGrid x:Name="HeadersGrid" Grid.Row="1" Style="{StaticResource FlatGrid}"
+                          AutoGenerateColumns="False" CanUserAddRows="False"
+                          HeadersVisibility="Column" RowHeaderWidth="0"
+                          CellEditEnding="HeadersGrid_CellEditEnding">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="2*"/>
+                        <DataGridTextColumn Header="Value" Binding="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="3*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+            <Grid Grid.Row="1" Margin="0,12,0,0" MinHeight="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Body" Margin="0,0,0,5" Foreground="{DynamicResource MutedBrush}"/>
+                <views:JsonTextEditor x:Name="BodyBox" Grid.Row="1" MinHeight="80"/>
+            </Grid>
+            <TextBlock x:Name="BodyNote" Grid.Row="2" Margin="0,6,0,0" Opacity="0.7"
+                       Text="Binary or oversized content is passed through unchanged."/>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0,14,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel x:Name="ResponseStatusPanel" Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="HTTP status" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBox x:Name="StatusBox" Width="72" Text="200" HorizontalContentAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button x:Name="AbandonButton" Content="Abandon" IsCancel="True" Margin="0,0,8,0" MinWidth="100"/>
+                <Button x:Name="ForwardButton" Content="Forward" IsDefault="True" Click="Forward_Click"
+                        MinWidth="110" Style="{DynamicResource AccentButtonStyle}"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

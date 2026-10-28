@@ -1,0 +1,317 @@
+<Application x:Class="HttpFreeKit.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:app="clr-namespace:HttpFreeKit">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemeResources AccentColor="#E1421F">
+                    <ui:ThemeResources.ThemeDictionaries>
+                        <ResourceDictionary x:Key="Dark">
+                            <ResourceDictionary.MergedDictionaries>
+                                <ui:ColorPaletteResources
+                                    Accent="#E1421F"
+                                    AltHigh="#16181D"
+                                    AltMediumHigh="#1F2128"
+                                    AltMedium="#1F2128"
+                                    AltMediumLow="#1F2128"
+                                    AltLow="#16181D"
+                                    BaseHigh="#E8EAF0"
+                                    BaseMediumHigh="#C5C9D3"
+                                    BaseMedium="#8A8F9C"
+                                    BaseMediumLow="#5C616D"
+                                    BaseLow="#3A3D47"
+                                    ChromeHigh="#3A3D47"
+                                    ChromeMedium="#2A2D36"
+                                    ChromeMediumLow="#23252D"
+                                    ChromeLow="#1F2128"
+                                    ChromeAltLow="#C5C9D3"
+                                    ListMedium="#353842"
+                                    ListLow="#2A2D36"/>
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                        <ResourceDictionary x:Key="Light">
+                            <ResourceDictionary.MergedDictionaries>
+                                <ui:ColorPaletteResources
+                                    Accent="#E1421F"
+                                    AltHigh="#FFFFFF"
+                                    AltMediumHigh="#F4F5F7"
+                                    AltMedium="#F4F5F7"
+                                    AltMediumLow="#F4F5F7"
+                                    AltLow="#FFFFFF"
+                                    BaseHigh="#20232A"
+                                    BaseMediumHigh="#454A55"
+                                    BaseMedium="#626976"
+                                    BaseMediumLow="#9298A3"
+                                    BaseLow="#D9DCE2"
+                                    ChromeHigh="#D9DCE2"
+                                    ChromeMedium="#E5E7EB"
+                                    ChromeMediumLow="#ECEEF1"
+                                    ChromeLow="#F4F5F7"
+                                    ChromeAltLow="#454A55"
+                                    ListMedium="#E9EBEF"
+                                    ListLow="#F4F5F7"/>
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                    </ui:ThemeResources.ThemeDictionaries>
+                </ui:ThemeResources>
+                <ui:XamlControlsResources />
+            </ResourceDictionary.MergedDictionaries>
+
+
+            <SolidColorBrush x:Key="BgBrush" Color="#16181D"/>
+            <SolidColorBrush x:Key="SurfaceBrush" Color="#1F2128"/>
+            <SolidColorBrush x:Key="Surface2Brush" Color="#2A2D36"/>
+            <SolidColorBrush x:Key="LineBrush" Color="#2E313A"/>
+            <SolidColorBrush x:Key="MutedBrush" Color="#8A8F9C"/>
+            <SolidColorBrush x:Key="AccentBrush" Color="#E1421F"/>
+            <SolidColorBrush x:Key="AccentHoverBrush" Color="#C73519"/>
+            <Color x:Key="HttpFreeKitAccentColor">#E1421F</Color>
+            <Color x:Key="HttpFreeKitAccentLightColor">#FF7A45</Color>
+            <Color x:Key="HttpFreeKitBackgroundColor">#16181D</Color>
+            <Color x:Key="HttpFreeKitSurfaceColor">#1F2128</Color>
+            <Color x:Key="HttpFreeKitSurface2Color">#2A2D36</Color>
+            <Color x:Key="HttpFreeKitLineColor">#2E313A</Color>
+            <Color x:Key="HttpFreeKitMutedColor">#8A8F9C</Color>
+            <Color x:Key="HttpFreeKitForegroundColor">#E8EAF0</Color>
+            <Color x:Key="HttpFreeKitForegroundSecondaryColor">#AEB7C8</Color>
+            <SolidColorBrush x:Key="SelectionBrush" Color="#191B21"/>
+            <SolidColorBrush x:Key="AppForegroundBrush" Color="#E8EAF0"/>
+            <SolidColorBrush x:Key="AppForegroundSecondaryBrush" Color="#AEB7C8"/>
+            <SolidColorBrush x:Key="TitleBarHoverBrush" Color="#22252D"/>
+            <SolidColorBrush x:Key="TitleBarHoverBorderBrush" Color="#3A3D47"/>
+            <SolidColorBrush x:Key="NavigationViewDefaultPaneBackground" Color="#16181D"/>
+            <SolidColorBrush x:Key="NavigationViewExpandedPaneBackground" Color="#16181D"/>
+            <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="#16181D"/>
+            <Color x:Key="TabShadowColor">#758A8F9C</Color>
+
+
+            <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
+            <CornerRadius x:Key="OverlayCornerRadius">10</CornerRadius>
+
+
+            <SolidColorBrush x:Key="DataGridRowSelectedBackgroundBrush" Color="#191B21"/>
+            <SolidColorBrush x:Key="DataGridRowSelectedUnfocusedBackgroundBrush" Color="#191B21"/>
+            <SolidColorBrush x:Key="DataGridRowSelectedHoverBackgroundBrush" Color="#232127"/>
+            <SolidColorBrush x:Key="DataGridRowSelectedHoverUnfocusedBackgroundBrush" Color="#232127"/>
+            <SolidColorBrush x:Key="DataGridCellSelectedBackgroundBrush" Color="#191B21"/>
+            <SolidColorBrush x:Key="DataGridCellSelectedUnfocusedBackgroundBrush" Color="#191B21"/>
+            <SolidColorBrush x:Key="DataGridSelectionBrush" Color="#252932"/>
+            <SolidColorBrush x:Key="DataGridSelectionHoverBrush" Color="#30343E"/>
+
+
+            <Style x:Key="FlatRow" TargetType="DataGridRow" BasedOn="{StaticResource {x:Type DataGridRow}}">
+                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="MinHeight" Value="30"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource Surface2Brush}"/>
+                    </Trigger>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource DataGridSelectionBrush}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}"/>
+                    </Trigger>
+                    <MultiTrigger>
+                        <MultiTrigger.Conditions>
+                            <Condition Property="IsSelected" Value="True"/>
+                            <Condition Property="IsMouseOver" Value="True"/>
+                        </MultiTrigger.Conditions>
+                        <Setter Property="Background" Value="{DynamicResource DataGridSelectionHoverBrush}"/>
+                    </MultiTrigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="FlatCell" TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="Padding" Value="8,0"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource DataGridSelectionBrush}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}"/>
+                    </Trigger>
+                    <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                        <Setter Property="BorderBrush" Value="Transparent"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <Style x:Key="FlatHeader" TargetType="DataGridColumnHeader" BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+                <Setter Property="FontSize" Value="11"/>
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="Padding" Value="8,8"/>
+                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource LineBrush}"/>
+            </Style>
+
+            <Style x:Key="FlatGrid" TargetType="DataGrid" BasedOn="{StaticResource {x:Type DataGrid}}">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="GridLinesVisibility" Value="None"/>
+                <Setter Property="RowStyle" Value="{StaticResource FlatRow}"/>
+                <Setter Property="CellStyle" Value="{StaticResource FlatCell}"/>
+                <Setter Property="ColumnHeaderStyle" Value="{StaticResource FlatHeader}"/>
+                <Setter Property="RowHeight" Value="30"/>
+            </Style>
+
+            <Style x:Key="DetailTabItem" TargetType="TabItem">
+                <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}"/>
+                <Setter Property="Padding" Value="12,6"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TabItem">
+                            <Grid>
+                                <Border x:Name="TabShadow" Background="{DynamicResource SurfaceBrush}"
+                                        CornerRadius="7,7,0,0" Opacity="0">
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="{DynamicResource TabShadowColor}" BlurRadius="10"
+                                                          ShadowDepth="2" Opacity="0.8"/>
+                                    </Border.Effect>
+                                </Border>
+                                <Border x:Name="TabBorder" Background="Transparent" BorderBrush="Transparent"
+                                        BorderThickness="1" CornerRadius="7,7,0,0" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter ContentSource="Header" HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center" RecognizesAccessKey="True"
+                                                      SnapsToDevicePixels="True"/>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource Surface2Brush}"/>
+                                    <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource LineBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                                    <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource LineBrush}"/>
+                                    <Setter TargetName="TabBorder" Property="Panel.ZIndex" Value="1"/>
+                                    <Setter TargetName="TabShadow" Property="Opacity" Value="1"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <ControlTemplate x:Key="RequestTabStripTemplate" TargetType="TabControl">
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                    <TabPanel IsItemsHost="True" KeyboardNavigation.TabIndex="1"/>
+                </Border>
+            </ControlTemplate>
+
+
+            <Style x:Key="Card" TargetType="Border">
+                <Setter Property="Background" Value="{DynamicResource SurfaceBrush}"/>
+                <Setter Property="CornerRadius" Value="6"/>
+                <Setter Property="Padding" Value="12"/>
+            </Style>
+
+            <app:ScrollThumbViewportConverter x:Key="ScrollThumbViewportConverter"/>
+
+            <Style x:Key="AppScrollBarPageButton" TargetType="RepeatButton">
+                <Setter Property="Focusable" Value="False"/>
+                <Setter Property="IsTabStop" Value="False"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RepeatButton">
+                            <Border Background="Transparent"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="AppScrollBarThumb" TargetType="Thumb">
+                <Setter Property="MinWidth" Value="0"/>
+                <Setter Property="MinHeight" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Thumb">
+                            <Border x:Name="ThumbBorder" Background="{DynamicResource MutedBrush}"
+                                    CornerRadius="4" Margin="2"/>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource AppForegroundSecondaryBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsDragging" Value="True">
+                                    <Setter TargetName="ThumbBorder" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style TargetType="ScrollBar">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ScrollBar">
+                            <Grid Background="Transparent">
+                                <Track x:Name="PART_Track"
+                                       Orientation="{TemplateBinding Orientation}"
+                                       IsDirectionReversed="True"
+                                       IsEnabled="{TemplateBinding IsEnabled}"
+                                       Minimum="{TemplateBinding Minimum}"
+                                       Maximum="{TemplateBinding Maximum}"
+                                       Value="{TemplateBinding Value}"
+                                       Focusable="False">
+                                    <Track.ViewportSize>
+                                        <MultiBinding Converter="{StaticResource ScrollThumbViewportConverter}">
+                                            <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="ViewportSize"/>
+                                            <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Minimum"/>
+                                            <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Maximum"/>
+                                            <Binding RelativeSource="{RelativeSource Self}" Path="ActualWidth"/>
+                                            <Binding RelativeSource="{RelativeSource Self}" Path="ActualHeight"/>
+                                            <Binding RelativeSource="{RelativeSource TemplatedParent}" Path="Orientation"/>
+                                        </MultiBinding>
+                                    </Track.ViewportSize>
+                                    <Track.DecreaseRepeatButton>
+                                        <RepeatButton x:Name="PageUpButton" Command="ScrollBar.PageUpCommand"
+                                                      Style="{StaticResource AppScrollBarPageButton}"/>
+                                    </Track.DecreaseRepeatButton>
+                                    <Track.Thumb>
+                                        <Thumb x:Name="ScrollThumb" MinHeight="28" Style="{StaticResource AppScrollBarThumb}"/>
+                                    </Track.Thumb>
+                                    <Track.IncreaseRepeatButton>
+                                        <RepeatButton x:Name="PageDownButton" Command="ScrollBar.PageDownCommand"
+                                                      Style="{StaticResource AppScrollBarPageButton}"/>
+                                    </Track.IncreaseRepeatButton>
+                                </Track>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="Orientation" Value="Horizontal">
+                                    <Setter TargetName="ScrollThumb" Property="MinHeight" Value="0"/>
+                                    <Setter TargetName="ScrollThumb" Property="MinWidth" Value="28"/>
+                                    <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/>
+                                    <Setter TargetName="PageUpButton" Property="Command"
+                                            Value="ScrollBar.PageLeftCommand"/>
+                                    <Setter TargetName="PageDownButton" Property="Command"
+                                            Value="ScrollBar.PageRightCommand"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="Orientation" Value="Vertical">
+                        <Setter Property="Width" Value="12"/>
+                        <Setter Property="MinWidth" Value="12"/>
+                    </Trigger>
+                    <Trigger Property="Orientation" Value="Horizontal">
+                        <Setter Property="Height" Value="12"/>
+                        <Setter Property="MinHeight" Value="12"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

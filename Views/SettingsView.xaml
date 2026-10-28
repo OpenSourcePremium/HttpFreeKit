@@ -1,0 +1,298 @@
+<UserControl x:Class="HttpFreeKit.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:localization="clr-namespace:HttpFreeKit.Localization"
+             IsVisibleChanged="OnVisibleChanged">
+
+    <UserControl.Resources>
+
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/>
+            <Setter Property="Margin" Value="4,28,0,8"/>
+        </Style>
+        <Style x:Key="SettingsCard" TargetType="Border" BasedOn="{StaticResource Card}">
+            <Setter Property="Padding" Value="16"/>
+        </Style>
+
+        <Style x:Key="RowTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="RowDesc" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Opacity" Value="0.65"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,3,0,0"/>
+        </Style>
+
+        <Style x:Key="Divider" TargetType="Border">
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Background" Value="{DynamicResource LineBrush}"/>
+            <Setter Property="Margin" Value="0,14"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24,12,24,24" HorizontalAlignment="Stretch">
+
+
+            <TextBlock Text="APPARENCE" Style="{StaticResource SectionTitle}" Margin="4,0,0,8"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Thème" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Choisissez parmi cinq palettes sobres : Sombre, Clair, Nuit bleue, Ardoise et Violet."/>
+                        </StackPanel>
+                        <ComboBox x:Name="ThemeCombo" Grid.Column="1" Width="180" VerticalAlignment="Center"
+                                  SelectedValuePath="Tag" SelectionChanged="Theme_SelectionChanged">
+                            <ComboBoxItem Content="Sombre" Tag="Dark"/>
+                            <ComboBoxItem Content="Clair" Tag="Light"/>
+                            <ComboBoxItem Content="Nuit bleue" Tag="Midnight"/>
+                            <ComboBoxItem Content="Ardoise" Tag="Slate"/>
+                            <ComboBoxItem Content="Violet" Tag="Violet"/>
+                        </ComboBox>
+                    </Grid>
+                    <Border Style="{StaticResource Divider}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Langue" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Choisissez la langue de l’interface HTTP FreeKit."/>
+                        </StackPanel>
+                        <ComboBox x:Name="LanguageCombo" Grid.Column="1" Width="180" VerticalAlignment="Center"
+                                  SelectedValuePath="Tag" SelectionChanged="Language_SelectionChanged">
+                            <ComboBoxItem Tag="en">
+                                <StackPanel Orientation="Horizontal"><localization:LanguageFlag Language="en" Margin="0,0,8,0"/><TextBlock Text="English"/></StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="fr">
+                                <StackPanel Orientation="Horizontal"><localization:LanguageFlag Language="fr" Margin="0,0,8,0"/><TextBlock Text="Français"/></StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="es">
+                                <StackPanel Orientation="Horizontal"><localization:LanguageFlag Language="es" Margin="0,0,8,0"/><TextBlock Text="Español"/></StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="it">
+                                <StackPanel Orientation="Horizontal"><localization:LanguageFlag Language="it" Margin="0,0,8,0"/><TextBlock Text="Italiano"/></StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="pt">
+                                <StackPanel Orientation="Horizontal"><localization:LanguageFlag Language="pt" Margin="0,0,8,0"/><TextBlock Text="Português"/></StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="zh">
+                                <StackPanel Orientation="Horizontal"><localization:LanguageFlag Language="zh" Margin="0,0,8,0"/><TextBlock Text="中文"/></StackPanel>
+                            </ComboBoxItem>
+                            <ComboBoxItem Tag="ru">
+                                <StackPanel Orientation="Horizontal"><localization:LanguageFlag Language="ru" Margin="0,0,8,0"/><TextBlock Text="Русский"/></StackPanel>
+                            </ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+
+            <TextBlock Text="DISCORD" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                        <TextBlock Text="Présence riche Discord" Style="{StaticResource RowTitle}"/>
+                        <TextBlock Style="{StaticResource RowDesc}"
+                                   Text="Affiche l’onglet consulté et l’état de la capture. Aucun hôte, URL ni contenu capturé n’est partagé. Si la présence est active mais invisible, autorisez l’activité dans les paramètres de confidentialité de Discord."/>
+                        <TextBlock x:Name="DiscordStatus" Style="{StaticResource RowDesc}" Margin="0,6,0,0"/>
+                    </StackPanel>
+                    <ui:ToggleSwitch x:Name="DiscordPresenceToggle" Grid.Column="1" VerticalAlignment="Center"
+                                     OnContent="" OffContent="" Toggled="DiscordPresence_Toggled"/>
+                </Grid>
+            </Border>
+
+
+            <TextBlock Text="CAPTURE" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Démarrer la capture au lancement" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="La capture démarre automatiquement à l'ouverture de HTTP FreeKit."/>
+                        </StackPanel>
+                        <ui:ToggleSwitch x:Name="AutoCaptureToggle" Grid.Column="1" VerticalAlignment="Center"
+                                         OnContent="" OffContent="" Toggled="AutoCapture_Toggled"/>
+                    </Grid>
+
+                    <Border Style="{StaticResource Divider}"/>
+
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Configurer curl, Python, Node… automatiquement" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Définit HTTPS_PROXY et les certificats de confiance (REQUESTS_CA_BUNDLE, SSL_CERT_FILE, CURL_CA_BUNDLE, NODE_EXTRA_CA_CERTS, NODE_USE_ENV_PROXY) tant que la capture est active. Ouvrez un NOUVEAU terminal pour en profiter ; tout est retiré à l'arrêt."/>
+                        </StackPanel>
+                        <ui:ToggleSwitch x:Name="EnvToggle" Grid.Column="1" VerticalAlignment="Center"
+                                         OnContent="" OffContent="" Toggled="Env_Toggled"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+
+            <TextBlock Text="RÉSEAU" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Port du proxy local" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Entre 1024 et 65535. Le proxy n'écoute que sur 127.0.0.1. Si la capture est active, elle redémarre pour prendre le nouveau port en compte."/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBox x:Name="PortBox" Width="90" HorizontalContentAlignment="Center"
+                                     ui:ControlHelper.PlaceholderText="Ex. : 8866"/>
+                            <Button Content="Appliquer" Click="ApplyPort_Click" Margin="8,0,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Style="{StaticResource Divider}"/>
+
+
+                    <TextBlock Text="Hôtes à ne pas déchiffrer en HTTPS" Style="{StaticResource RowTitle}"/>
+                    <TextBlock Style="{StaticResource RowDesc}"
+                               Text="Un hôte par ligne, * et ? acceptés. Utile pour les applications qui refusent le certificat de HTTP FreeKit (certificate pinning) : leurs connexions passent en tunnel, sans inspection."/>
+                    <TextBox x:Name="BypassBox" Margin="0,10,0,0" MinHeight="90" AcceptsReturn="True"
+                             TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontFamily="Consolas"
+                             ui:ControlHelper.PlaceholderText="Ex. : example.com, *.internal.example"/>
+                    <Button Content="Enregistrer la liste" Click="SaveBypass_Click" Margin="0,10,0,0"
+                            HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Border>
+
+
+            <TextBlock Text="CERTIFICAT RACINE" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="CertStatus" Style="{StaticResource RowTitle}"/>
+                        <TextBlock Style="{StaticResource RowDesc}"
+                                   Text="Nécessaire pour lire le contenu HTTPS. Installé uniquement pour votre session Windows (magasin utilisateur), jamais pour toute la machine."/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="Installer" Click="InstallCert_Click" Margin="0,0,8,0"/>
+                        <Button Content="Retirer" Click="RemoveCert_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+
+            <TextBlock Text="DONNÉES" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                        <TextBlock x:Name="DataPathText"
+                                   Text="{Binding RelativeSource={RelativeSource Self}, Path=Tag}"
+                                   TextWrapping="Wrap" FontFamily="Consolas" FontSize="13" Opacity="0.9"/>
+                        <TextBlock Style="{StaticResource RowDesc}"
+                                   Text="Les données HTTP FreeKit sont stockées dans le dossier sélectionné. Par défaut : %USERPROFILE%\.httpfreekit."/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="Choisir un dossier…" Click="ChangeDataFolder_Click" Margin="0,0,8,0"/>
+                        <Button Content="Ouvrir le dossier" Click="OpenData_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+
+            <TextBlock Text="MAINTENANCE" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Restaurer le proxy Windows" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Remet les réglages de proxy d'origine tout de suite et arrête la capture si elle est active."/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Restaurer maintenant" Click="RestoreProxy_Click" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <Border Style="{StaticResource Divider}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Tout désinstaller" Style="{StaticResource RowTitle}" Foreground="#FF6B6B"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Remet Windows dans son état d'origine : proxy système, règles du pare-feu et certificat. Vous pouvez aussi supprimer les données et l'exécutable."/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="Tout désinstaller…" Click="Uninstall_Click"
+                                Foreground="#FF6B6B" VerticalAlignment="Center"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <TextBlock x:Name="VersionText" Opacity="0.5" Margin="4,24,0,0"/>
+
+            <TextBlock Text="MÉMOIRE DE CAPTURE" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                        <TextBlock Text="Budget des corps de requête rejouables" Style="{StaticResource RowTitle}"/>
+                        <TextBlock Style="{StaticResource RowDesc}"
+                                   Text="Limite mémoire globale des corps bruts capturés. Les plus anciens sont évincés avant les entrées Trafic; un corps évincé ne peut pas être rejoué fidèlement."/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBox x:Name="TrafficBodyBudgetBox" Width="80" Text="200"
+                                 HorizontalContentAlignment="Center"/>
+                        <TextBlock Text="Mo" VerticalAlignment="Center" Margin="8,0"/>
+                        <Button Content="Appliquer" Click="ApplyTrafficBodyBudget_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
