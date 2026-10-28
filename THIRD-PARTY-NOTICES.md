@@ -9,7 +9,7 @@ licenses apply to those components, not to the HTTP FreeKit source code.
 |---|---:|---|
 | AvalonEdit | 6.3.1.120 | MIT — [license](https://github.com/icsharpcode/AvalonEdit/blob/master/LICENSE) |
 | ModernWpfUI | 0.9.6 | MIT — [license](https://github.com/Kinnara/ModernWpf/blob/master/LICENSE) |
-| Titanium.Web.Proxy | 3.2.0 | The NuGet package does not declare license metadata. The upstream repository currently identifies the NuGet library as MIT: [upstream license](https://github.com/justcoding121/Titanium-Web-Proxy/blob/master/LICENSE). Confirm that this applies to the exact 3.2.0 source before redistributing a release. |
+| Titanium.Web.Proxy | 3.2.0 | The NuGet package does not declare license metadata. The upstream repository currently identifies the NuGet library as MIT: [upstream license](https://github.com/justcoding121/Titanium-Web-Proxy/blob/master/LICENSE). |
 | BrotliSharpLib | 0.3.3 | MIT — [license](https://github.com/master131/BrotliSharpLib/blob/master/LICENSE) |
 | Portable.BouncyCastle | 1.8.8 | License information — [Bouncy Castle C# license](https://www.bouncycastle.org/csharp/licence.html). Preserve the applicable notice when redistributing. |
 | Microsoft.NETCore.Platforms | 5.0.0 | MIT — [.NET runtime license](https://github.com/dotnet/runtime/blob/main/LICENSE.TXT) |
