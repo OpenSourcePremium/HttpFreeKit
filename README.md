@@ -31,9 +31,7 @@
 <!-- Add a screenshot or GIF here, e.g.:
 <p align="center"><img src="docs/screenshot.png" alt="HTTP FreeKit traffic view" width="900"></p>
 -->
-
 ---
-## Download [here](https://github.com/OpenSourcePremium/HttpFreeKit/releases/download/V0.1.0/HTTP-FreeKit-Setup-0.1.0-win-x64.exe)
 ## Table of contents
 
 - [Overview](#overview)
