@@ -137,8 +137,8 @@ To restore the Windows proxy configuration and clean up the installation, use th
 
 <a href="https://star-history.com/#OpenSourcePremium/HttpFreeKit&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=OpenSourcePremium/HttpFreeKit&type=Date&theme=dark">
-    <img alt="Star history" src="https://api.star-history.com/svg?repos=OpenSourcePremium/HttpFreeKit&type=Date" width="600">
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=OpenSourcePremium/HttpFreeKit&type=Date&theme=dark&v=2">
+    <img alt="Star history" src="https://api.star-history.com/svg?repos=OpenSourcePremium/HttpFreeKit&type=Date&v=2" width="600">
   </picture>
 </a>
 
