@@ -131,8 +131,6 @@ public sealed class UpdateService
 
         try
         {
-            // Le téléchargement est isolé dans sa propre méthode : à son retour, le FileStream est
-            // entièrement fermé et le fichier n'est plus verrouillé (FileShare.None).
             string actualHash = await DownloadInstallerFileAsync(installer, installerPath, progress, cancellationToken);
 
             if (installer.Sha256 is { Length: > 0 } expectedHash
@@ -188,8 +186,6 @@ public sealed class UpdateService
         }
     }
 
-    // Télécharge l'installeur vers installerPath, vérifie sa taille, et renvoie son SHA-256 (hex majuscule).
-    // Tous les flux (réseau + fichier) sont fermés quand la méthode se termine.
     private static async Task<string> DownloadInstallerFileAsync(
         UpdateInstaller installer,
         string installerPath,
@@ -241,10 +237,6 @@ public sealed class UpdateService
         return Convert.ToHexString(hash.GetHashAndReset());
     }
 
-    // The installer runs silently and closes this app, so nothing restarts it afterwards.
-    // A hidden PowerShell process waits for the installer to exit, then starts the updated app
-    // unless the installer's own [Run] entry already did. This process inherits this app's
-    // administrator elevation (requireAdministrator manifest), so no extra UAC prompt appears.
     private static void StartRelaunchHelper(
         string installerFileName,
         string installerPath,
