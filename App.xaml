@@ -86,6 +86,54 @@
             <SolidColorBrush x:Key="NavigationViewTopPaneBackground" Color="#16181D"/>
             <Color x:Key="TabShadowColor">#758A8F9C</Color>
 
+            <Style x:Key="TitleBarButton" TargetType="Button">
+                <Setter Property="Width" Value="30"/>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="Margin" Value="3,0,0,0"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}"/>
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="7" SnapsToDevicePixels="True">
+                                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                      SnapsToDevicePixels="True"/>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource TitleBarHoverBrush}"/>
+                                    <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="Transparent"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsMouseOver" Value="True"/>
+                                        <Condition Property="Tag" Value="close"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                    <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="White"/>
+                                </MultiTrigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.75"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.45"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
 
             <CornerRadius x:Key="ControlCornerRadius">8</CornerRadius>
             <CornerRadius x:Key="OverlayCornerRadius">10</CornerRadius>

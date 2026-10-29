@@ -1,9 +1,11 @@
 using System.Windows;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Windows.Threading;
 using HttpFreeKit.Core;
 using HttpFreeKit.Localization;
+using HttpFreeKit.Views;
 
 namespace HttpFreeKit;
 
@@ -57,6 +59,12 @@ public partial class MainWindow : Window
     private bool _suppress;
     private string _language = "en";
     private readonly DispatcherTimer _presenceRefreshTimer = new() { Interval = TimeSpan.FromSeconds(10) };
+    private readonly UpdateService _updateService = new();
+    private bool _updateCheckInProgress;
+    private bool _startupUpdateCheckStarted;
+    private string _updateStatusKey = "Ready to check for updates.";
+    private object[] _updateStatusValues = [];
+    private UpdateWindow? _releaseWindow;
 
     public MainWindow(bool recovered)
     {
@@ -65,8 +73,18 @@ public partial class MainWindow : Window
         _language = LocalizationService.SupportedLanguages.Contains(Services.Settings.Language)
             ? Services.Settings.Language
             : "en";
+        SidebarVersionText.Text = LocalizationService.Format(
+            "HTTP FreeKit version {0}", _language, UpdateService.CurrentVersion);
         _presenceRefreshTimer.Tick += (_, _) => UpdateDiscordPresence();
         Closed += (_, _) => _presenceRefreshTimer.Stop();
+        ContentRendered += (_, _) =>
+        {
+            if (_startupUpdateCheckStarted)
+                return;
+
+            _startupUpdateCheckStarted = true;
+            _ = CheckForUpdatesAsync(isManual: false);
+        };
         Loaded += (_, _) =>
         {
             LocalizationService.Apply(this, _language);
@@ -79,6 +97,7 @@ public partial class MainWindow : Window
             UpdateDiscordPresence();
             _presenceRefreshTimer.Start();
             if (Services.Settings.AutoCapture) CaptureToggle.IsOn = true;
+            RefreshUpdateLabels();
         };
     }
 
@@ -98,7 +117,164 @@ public partial class MainWindow : Window
         NetTestsPage.RefreshLanguage();
         SettingsPage.RefreshLanguage();
         SettingsPage.RefreshDiscordStatus();
+        RefreshUpdateLabels();
         UpdateDiscordPresence();
+    }
+
+    public async Task CheckForUpdatesAsync(bool isManual)
+    {
+        if (_updateCheckInProgress)
+            return;
+
+        _updateCheckInProgress = true;
+        SettingsPage.SetUpdateCheckInProgress(true);
+        SetUpdateStatus("Checking for updates…");
+
+        try
+        {
+            UpdateCheckResult result = await _updateService.CheckForUpdatesAsync();
+            switch (result.Availability)
+            {
+                case UpdateAvailability.Current:
+                    SetUpdateStatus("You're up to date (v{0}).", result.CurrentVersion);
+                    break;
+                case UpdateAvailability.InstallerMissing:
+                    SetUpdateStatus(
+                        "Version {0} is available, but its installer is not attached yet.",
+                        result.LatestVersion);
+                    break;
+                case UpdateAvailability.Available:
+                    SetUpdateStatus("New version {0} is available.", result.LatestVersion);
+                    break;
+            }
+
+            if (result.Release is not null
+                && (isManual || !string.Equals(
+                    Services.Settings.DoNotRemindUpdateVersion, result.Release.Version, StringComparison.Ordinal)))
+                ShowUpdateWindow(result.Release);
+        }
+        catch (Exception ex) when (ex is HttpRequestException
+                                   or TaskCanceledException
+                                   or System.Text.Json.JsonException
+                                   or InvalidDataException
+                                   or IOException)
+        {
+            SetUpdateStatus("Unable to check for updates: {0}", ex.Message);
+            if (isManual)
+                AppDialog.Show(this, LocalizationService.Format(
+                    "Unable to check for updates: {0}", _language, ex.Message),
+                    "HTTP FreeKit", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            _updateCheckInProgress = false;
+            SettingsPage.SetUpdateCheckInProgress(false);
+        }
+    }
+
+    public async Task ShowCurrentReleaseInfoAsync()
+    {
+        SettingsPage.SetUpdateCheckInProgress(true);
+        SetUpdateStatus("Loading release notes…");
+        try
+        {
+            UpdateRelease? release = await _updateService.GetCurrentReleaseAsync();
+            if (release is null)
+            {
+                SetUpdateStatus("No release notes are available for this version.");
+                AppDialog.Show(this, LocalizationService.Translate(
+                    "No release notes are available for this version.", _language),
+                    LocalizationService.Translate("Current release", _language),
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            ShowReleaseInfoWindow(release);
+            SetUpdateStatus("Ready to check for updates.");
+        }
+        catch (Exception ex) when (ex is HttpRequestException
+                                   or TaskCanceledException
+                                   or System.Text.Json.JsonException
+                                   or InvalidDataException
+                                   or IOException)
+        {
+            SetUpdateStatus("Unable to check for updates: {0}", ex.Message);
+            AppDialog.Show(this, LocalizationService.Format(
+                "Unable to check for updates: {0}", _language, ex.Message),
+                LocalizationService.Translate("Current release", _language),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            SettingsPage.SetUpdateCheckInProgress(false);
+        }
+    }
+
+    private void ShowUpdateWindow(UpdateRelease release)
+    {
+        if (_releaseWindow is { IsVisible: true })
+        {
+            _releaseWindow.Activate();
+            return;
+        }
+
+        var window = new UpdateWindow(
+            this,
+            release,
+            _language,
+            isUpdate: true,
+            installAction: async (progress, cancellationToken) =>
+            {
+                await _updateService.DownloadAndLaunchInstallerAsync(release, progress, cancellationToken);
+                Application.Current.Shutdown();
+            },
+            ignoreAction: doNotRemind =>
+            {
+                if (doNotRemind)
+                    Services.Settings.DoNotRemindUpdateVersion = release.Version;
+                else if (string.Equals(
+                    Services.Settings.DoNotRemindUpdateVersion, release.Version, StringComparison.Ordinal))
+                    Services.Settings.DoNotRemindUpdateVersion = null;
+                Services.Settings.Save();
+                SetUpdateStatus(doNotRemind
+                    ? "Version {0} was ignored."
+                    : "Update dismissed for now.", release.Version);
+            },
+            doNotRemindInitially: string.Equals(
+                Services.Settings.DoNotRemindUpdateVersion, release.Version, StringComparison.Ordinal));
+        _releaseWindow = window;
+        window.Closed += (_, _) => _releaseWindow = null;
+        window.ShowDialog();
+    }
+
+    private void ShowReleaseInfoWindow(UpdateRelease release)
+    {
+        var window = new UpdateWindow(
+            this,
+            release,
+            _language,
+            isUpdate: false);
+        _releaseWindow = window;
+        window.Closed += (_, _) => _releaseWindow = null;
+        window.ShowDialog();
+    }
+
+    private void SetUpdateStatus(string key, params object[] values)
+    {
+        _updateStatusKey = key;
+        _updateStatusValues = values;
+        string status = LocalizationService.Format(key, _language, values);
+        SettingsPage.SetUpdateStatus(status);
+    }
+
+    private void RefreshUpdateLabels()
+    {
+        SidebarVersionText.Text = LocalizationService.Format(
+            "HTTP FreeKit version {0}", _language, UpdateService.CurrentVersion);
+        SettingsPage.SetCurrentVersion(UpdateService.CurrentVersion);
+        SettingsPage.SetUpdateStatus(LocalizationService.Format(
+            _updateStatusKey, _language, _updateStatusValues));
+        _releaseWindow?.RefreshLanguage(_language);
     }
 
     public void RefreshTheme()

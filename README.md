@@ -64,6 +64,7 @@ HTTP FreeKit is a Windows application for capturing, inspecting, and testing HTT
 | **HTTP testing** | Send requests, inspect responses, and replay captured requests. |
 | **Connection monitoring** | TCP and UDP, with process identification and Windows Firewall rule management. |
 | **Customizable UI** | Multiple languages and themes. |
+| **Automatic updates** | Checks all published GitHub releases and offers the newest version above the installed version. |
 
 > **Capture coverage:** only applications that use the Windows system proxy can be inspected. HTTPS connections that cannot be decrypted remain tunnels.
 
@@ -73,7 +74,9 @@ HTTP FreeKit is a Windows application for capturing, inspecting, and testing HTT
 - .NET 8 SDK or later to build the project.
 - To inspect HTTPS traffic, approve installation of the HTTP FreeKit root certificate in the current user's certificate store. Some applications use certificate pinning and cannot be decrypted.
 
-Capture changes the Windows proxy configuration. Depending on the requested operation, the application may also require elevated privileges to manage the proxy, certificates, processes, or Windows Firewall.
+The application requests administrator privileges at startup to manage the Windows proxy, certificates, processes, and Windows Firewall.
+
+Automatic update checks contact the public GitHub repository and compare the installed app version against every published release, including pre-releases. The updater offers the highest newer version with a matching Windows x64 setup asset, verifies its size and any SHA-256 digest provided by GitHub, then runs the installer silently in the current app directory, closes HTTP FreeKit so its executable can be replaced, and launches the updated app. The download can be canceled before installation starts. Attach the setup asset named `HTTP-FreeKit-Setup-<version>-win-x64.exe` to each release, using a tag that contains its version.
 
 ## Getting started
 

@@ -31,7 +31,6 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
-
         if (e.Args.Any(a => a.Equals("--cleanup", StringComparison.OrdinalIgnoreCase)))
         {
             bool purge = e.Args.Any(a => a.Equals("--purge", StringComparison.OrdinalIgnoreCase));

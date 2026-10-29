@@ -5,6 +5,7 @@ dist/
 publish/
 artifacts/
 TestResults/
+Localization.zip
 
 # Visual Studio and IDE-local files
 .vs/

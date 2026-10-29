@@ -101,9 +101,36 @@
                 </StackPanel>
             </Border>
 
+            <TextBlock Text="UPDATE CHECK" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                        <TextBlock Text="Update check" Style="{StaticResource RowTitle}"/>
+                        <TextBlock Style="{StaticResource RowDesc}"
+                                   Text="Check for a newer version or view the release notes for this version."/>
+                        <TextBlock x:Name="CurrentVersionText" Style="{StaticResource RowDesc}"
+                                   Visibility="Collapsed"/>
+                        <TextBlock x:Name="UpdateStatusText" Style="{StaticResource RowDesc}" Margin="0,0,0,0"
+                                   Text="Ready to check for updates."/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <Button x:Name="CurrentReleaseButton" Content="View current release"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                Click="CurrentRelease_Click" Margin="0,0,0,8"/>
+                        <Button x:Name="CheckUpdatesButton" Content="Check for updates"
+                                HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                Click="CheckUpdates_Click"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
 
             <TextBlock Text="DISCORD" Style="{StaticResource SectionTitle}"/>
-            <Border Style="{StaticResource SettingsCard}">
+            <Border Style="{StaticResource SettingsCard}" Padding="16,16,16,10">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -270,8 +297,6 @@
                     </Grid>
                 </StackPanel>
             </Border>
-
-            <TextBlock x:Name="VersionText" Opacity="0.5" Margin="4,24,0,0"/>
 
             <TextBlock Text="MÉMOIRE DE CAPTURE" Style="{StaticResource SectionTitle}"/>
             <Border Style="{StaticResource SettingsCard}">

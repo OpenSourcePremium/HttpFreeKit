@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
@@ -38,8 +37,9 @@ public partial class SettingsView : UserControl
         BypassBox.Text = s.BypassHosts;
         TrafficBodyBudgetBox.Text = s.TrafficBodyBudgetMb.ToString();
         DataPathText.Tag = AppPaths.DataDir;
-        var v = Assembly.GetExecutingAssembly().GetName().Version;
-        VersionText.Text = $"HTTP FreeKit {v?.ToString(3) ?? "0.1.0"}";
+        CurrentVersionText.Text = LocalizationService.Format(
+            "Current version: {0}", s.Language, UpdateService.CurrentVersion);
+        CurrentVersionText.Visibility = Visibility.Visible;
         _loading = false;
         UpdateDiscordStatus(Services.DiscordPresence.Status);
         RefreshCert();
@@ -66,7 +66,42 @@ public partial class SettingsView : UserControl
         ThemeCombo.SelectedIndex = -1;
         ThemeCombo.SelectedValue = Services.Settings.Theme;
         LanguageCombo.SelectedValue = Services.Settings.Language;
+        CurrentVersionText.Text = LocalizationService.Format(
+            "Current version: {0}", Services.Settings.Language, UpdateService.CurrentVersion);
+        CurrentVersionText.Visibility = Visibility.Visible;
         _loading = false;
+    }
+
+    public void SetUpdateStatus(string status)
+    {
+        UpdateStatusText.Text = status;
+    }
+
+    public void SetCurrentVersion(string version)
+    {
+        CurrentVersionText.Text = LocalizationService.Format(
+            "Current version: {0}", Services.Settings.Language, version);
+        CurrentVersionText.Visibility = string.IsNullOrWhiteSpace(version)
+            ? Visibility.Collapsed
+            : Visibility.Visible;
+    }
+
+    public void SetUpdateCheckInProgress(bool inProgress)
+    {
+        CheckUpdatesButton.IsEnabled = !inProgress;
+        CurrentReleaseButton.IsEnabled = !inProgress;
+    }
+
+    private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+    {
+        if (Main is not null)
+            await Main.CheckForUpdatesAsync(isManual: true);
+    }
+
+    private async void CurrentRelease_Click(object sender, RoutedEventArgs e)
+    {
+        if (Main is not null)
+            await Main.ShowCurrentReleaseInfoAsync();
     }
 
     private void Theme_SelectionChanged(object sender, SelectionChangedEventArgs e)

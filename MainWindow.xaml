@@ -16,57 +16,6 @@
                       CornerRadius="0" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
 
-    <Window.Resources>
-        <Style x:Key="TitleBarButton" TargetType="Button">
-            <Setter Property="Width" Value="30"/>
-            <Setter Property="Height" Value="30"/>
-            <Setter Property="Margin" Value="3,0,0,0"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Foreground" Value="{DynamicResource AppForegroundBrush}"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border x:Name="ButtonBorder" Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="7" SnapsToDevicePixels="True">
-                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                                  SnapsToDevicePixels="True"/>
-                            </Grid>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource TitleBarHoverBrush}"/>
-                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="Transparent"/>
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsMouseOver" Value="True"/>
-                                    <Condition Property="Tag" Value="close"/>
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="ButtonBorder" Property="Background" Value="{DynamicResource AccentBrush}"/>
-                                <Setter TargetName="ButtonBorder" Property="BorderBrush" Value="Transparent"/>
-                                <Setter Property="Foreground" Value="White"/>
-                            </MultiTrigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.75"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.45"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
-
     <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="48"/>
@@ -152,6 +101,14 @@
                            IsBackButtonVisible="Collapsed" OpenPaneLength="190"
                            SelectionChanged="Nav_SelectionChanged"
                            Background="Transparent">
+            <ui:NavigationView.PaneFooter>
+                <Border Margin="12,8" Padding="12,10" CornerRadius="10"
+                        Background="{DynamicResource SurfaceBrush}"
+                        BorderBrush="{DynamicResource LineBrush}" BorderThickness="1">
+                    <TextBlock x:Name="SidebarVersionText" FontSize="12" FontWeight="SemiBold"
+                               Foreground="{DynamicResource AppForegroundBrush}"/>
+                </Border>
+            </ui:NavigationView.PaneFooter>
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem Content="Trafic" Tag="traffic" IsSelected="True">
                     <ui:NavigationViewItem.Icon><ui:FontIcon Glyph="&#xE774;"/></ui:NavigationViewItem.Icon>

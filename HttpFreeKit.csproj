@@ -12,7 +12,7 @@
     <Description>HTTP traffic capture, inspection, and testing toolkit.</Description>
     <ApplicationManifest>Assets\app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <NoWarn>$(NoWarn);CS8618;NU1701;CS0108</NoWarn>
   </PropertyGroup>

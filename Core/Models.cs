@@ -237,6 +237,7 @@ public sealed class AppSettings
     public string BypassHosts { get; set; } = "";
     public string? CaThumbprint { get; set; }
     public int TrafficBodyBudgetMb { get; set; } = 200;
+    public string? DoNotRemindUpdateVersion { get; set; }
 
     [JsonIgnore]
     public IEnumerable<string> BypassList =>
