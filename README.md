@@ -50,7 +50,7 @@
 
 HTTP FreeKit is a Windows application for capturing, inspecting, and testing HTTP and HTTPS traffic. It brings together a local proxy, traffic viewer, rule editor, HTTP client, and connection monitor in one desktop interface.
 
-The official website is [httpfreekit.com](https://httpfreekit.com). Project documentation will be published there when the site is live.
+You can find a simple documentation on the official website : [httpfreekit.com](https://httpfreekit.com)
 
 ## Features
 
