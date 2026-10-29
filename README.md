@@ -2,7 +2,7 @@
   <img src="Assets/app.png" alt="" width="64" height="64"><br>
   HTTP FreeKit<br>
   <sub><a href="https://httpfreekit.com">Website</a></sub>
-  <br>
+  &nbsp;
 </h1>
 
 <p align="center">
