@@ -3,9 +3,9 @@
   HTTP FreeKit
 </h1>
 
-<h3 align="center">
+<h2 align="center">
   <sub><a href="https://httpfreekit.com">Website</a></sub>
-</h3>
+</h2>
 
 <p align="center">
   Capture, inspect, and test HTTP(S) traffic on Windows — local proxy, traffic viewer, rule editor, HTTP client, and connection monitor in one desktop app.
