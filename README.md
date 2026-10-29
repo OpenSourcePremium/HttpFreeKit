@@ -1,11 +1,8 @@
 <h1 align="center">
   <img src="Assets/app.png" alt="" width="64" height="64"><br>
-  HTTP FreeKit
-</h1>
-
-<h2 align="center">
+  HTTP FreeKit<br>
   <sub><a href="https://httpfreekit.com">Website</a></sub>
-</h2>
+</h1>
 
 <p align="center">
   Capture, inspect, and test HTTP(S) traffic on Windows — local proxy, traffic viewer, rule editor, HTTP client, and connection monitor in one desktop app.
