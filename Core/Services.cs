@@ -9,6 +9,7 @@ public static class Services
     public static FirewallStore Firewall { get; private set; } = null!;
     public static ConnectionMonitor Connections { get; private set; } = null!;
     public static ProxyService Proxy { get; private set; } = null!;
+    public static TransparentRedirector Redirector { get; private set; } = null!;
     public static NetTestService NetTests { get; private set; } = null!;
     public static DiscordPresenceService DiscordPresence { get; private set; } = null!;
 
@@ -21,6 +22,7 @@ public static class Services
         Firewall = new FirewallStore();
         Connections = new ConnectionMonitor();
         Proxy = new ProxyService();
+        Redirector = new TransparentRedirector();
         NetTests = new NetTestService();
         DiscordPresence = new DiscordPresenceService();
         Traffic.RequestBodyBudgetBytes = Math.Clamp(Settings.TrafficBodyBudgetMb, 1, 2048) * 1024L * 1024L;

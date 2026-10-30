@@ -168,6 +168,7 @@ public partial class App : Application
 
     private static void RestoreSystem()
     {
+        try { Services.Redirector?.Stop(); } catch { }
         try { SystemProxyManager.Restore(); } catch { }
         try { EnvironmentManager.Restore(); } catch { }
         try { Services.Proxy?.Stop(); } catch { }

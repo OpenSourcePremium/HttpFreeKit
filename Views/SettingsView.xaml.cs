@@ -17,6 +17,7 @@ public partial class SettingsView : UserControl
         InitializeComponent();
         Loaded += (_, _) => LoadValues();
         Services.DiscordPresence.StatusChanged += DiscordPresence_StatusChanged;
+        Services.Redirector.StatusChanged += Redirector_StatusChanged;
     }
 
     private Window? Owner => Window.GetWindow(this);
@@ -31,6 +32,11 @@ public partial class SettingsView : UserControl
             ? s.Language
             : "en";
         PortBox.Text = s.Port.ToString();
+        CaptureAllProcessesToggle.IsOn = s.CaptureAllProcesses;
+        RedirectPortBox.Text = s.RedirectPort.ToString();
+        RedirectPortsBox.Text = s.RedirectPorts;
+        BlockQuicToggle.IsOn = s.BlockQuic;
+        ExcludedProcessesBox.Text = string.Join(Environment.NewLine, s.ExcludedProcesses ?? []);
         AutoCaptureToggle.IsOn = s.AutoCapture;
         DiscordPresenceToggle.IsOn = s.DiscordPresence;
         if (EnvSwitch is { } env) env.IsOn = s.SetEnvVars;
@@ -42,12 +48,24 @@ public partial class SettingsView : UserControl
         CurrentVersionText.Visibility = Visibility.Visible;
         _loading = false;
         UpdateDiscordStatus(Services.DiscordPresence.Status);
+        UpdateRedirectorStatus();
         RefreshCert();
     }
 
     private void DiscordPresence_StatusChanged(string status)
     {
         Dispatcher.BeginInvoke(new Action(() => UpdateDiscordStatus(status)));
+    }
+
+    private void Redirector_StatusChanged()
+    {
+        Dispatcher.BeginInvoke(new Action(UpdateRedirectorStatus));
+    }
+
+    private void UpdateRedirectorStatus()
+    {
+        DriverStatusText.Text = LocalizationService.Translate(
+            Services.Redirector.DriverStatus, Services.Settings.Language);
     }
 
     private void UpdateDiscordStatus(string status)
@@ -69,6 +87,7 @@ public partial class SettingsView : UserControl
         CurrentVersionText.Text = LocalizationService.Format(
             "Current version: {0}", Services.Settings.Language, UpdateService.CurrentVersion);
         CurrentVersionText.Visibility = Visibility.Visible;
+        UpdateRedirectorStatus();
         _loading = false;
     }
 
@@ -166,12 +185,91 @@ public partial class SettingsView : UserControl
         Main?.RestartCapture();
     }
 
+    private void CaptureAllProcesses_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        Services.Settings.CaptureAllProcesses = CaptureAllProcessesToggle.IsOn;
+        Services.Settings.Save();
+        if (Main?.IsCaptureOn == true)
+            Main.RestartCapture();
+    }
+
+    private void BlockQuic_Toggled(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        Services.Settings.BlockQuic = BlockQuicToggle.IsOn;
+        Services.Settings.Save();
+        if (Services.Settings.CaptureAllProcesses && Main?.IsCaptureOn == true)
+            Main.RestartCapture();
+    }
+
+    private void SaveRedirectorSettings_Click(object sender, RoutedEventArgs e)
+    {
+        if (!int.TryParse(RedirectPortBox.Text.Trim(), out int relayPort) ||
+            relayPort is < 1024 or > 65535)
+        {
+            HttpFreeKit.AppDialog.Show(Owner, LocalizationService.Translate(
+                    "Enter a relay port between 1024 and 65535.", Services.Settings.Language),
+                LocalizationService.Translate("Invalid port", Services.Settings.Language),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (relayPort == Services.Settings.Port)
+        {
+            HttpFreeKit.AppDialog.Show(Owner, LocalizationService.Translate(
+                    "The relay port must differ from the local proxy port.", Services.Settings.Language),
+                LocalizationService.Translate("Invalid port", Services.Settings.Language),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (!TransparentRedirector.TryParsePorts(RedirectPortsBox.Text, out var ports, out string error))
+        {
+            HttpFreeKit.AppDialog.Show(Owner, LocalizationService.Translate(error, Services.Settings.Language),
+                LocalizationService.Translate("Invalid TCP ports", Services.Settings.Language),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (ports.Contains(relayPort))
+        {
+            HttpFreeKit.AppDialog.Show(Owner, LocalizationService.Translate(
+                    "The relay port cannot also be a redirected destination port.", Services.Settings.Language),
+                LocalizationService.Translate("Invalid port", Services.Settings.Language),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        Services.Settings.RedirectPort = relayPort;
+        Services.Settings.RedirectPorts = string.Join(",", ports);
+        Services.Settings.ExcludedProcesses = ExcludedProcessesBox.Text
+            .Split(new[] { '\r', '\n', ',', ';' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(name => Path.GetFileName(name.Trim()))
+            .Where(name => !string.IsNullOrWhiteSpace(name))
+            .Select(name => name!)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        Services.Settings.Save();
+
+        if (Services.Settings.CaptureAllProcesses && Main?.IsCaptureOn == true)
+            Main.RestartCapture();
+    }
+
     private void ApplyPort_Click(object sender, RoutedEventArgs e)
     {
         if (!int.TryParse(PortBox.Text.Trim(), out int port) || port < 1024 || port > 65535)
         {
             HttpFreeKit.AppDialog.Show(Owner, LocalizationService.Translate(
                 "Enter a port between 1024 and 65535.", Services.Settings.Language),
+                LocalizationService.Translate("Invalid port", Services.Settings.Language),
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+        if (Services.Settings.CaptureAllProcesses && port == Services.Settings.RedirectPort)
+        {
+            HttpFreeKit.AppDialog.Show(Owner, LocalizationService.Translate(
+                    "The relay port must differ from the local proxy port.", Services.Settings.Language),
                 LocalizationService.Translate("Invalid port", Services.Settings.Language),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return;

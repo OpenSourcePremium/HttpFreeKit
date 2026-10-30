@@ -24,6 +24,8 @@ public sealed class ProxyService : IDisposable
     public const string LegacyCaName = "PortableProxy Root CA";
     public const string CaPassword = "portableproxy";
     private const long MaxCapture = 1_000_000;
+    private const string RedirectPidHeader = "X-HttpFreeKit-Pid";
+    private const string RedirectTokenHeader = "X-HttpFreeKit-Token";
 
     private ProxyServer? _server;
     private ExplicitProxyEndPoint? _endpoint;
@@ -52,6 +54,8 @@ public sealed class ProxyService : IDisposable
         public bool TryBeginEditing() => Interlocked.CompareExchange(ref _editing, 1, 0) == 0;
         public void EndEditing() => Volatile.Write(ref _editing, 0);
     }
+
+    private sealed record RedirectedProcessContext(int Pid);
 
     public bool IsRunning => _server?.ProxyRunning == true;
     public event Action<TrafficExchangeUpdate>? ExchangeUpdated;
@@ -217,6 +221,49 @@ public sealed class ProxyService : IDisposable
         }
         catch { }
         return -1;
+    }
+
+    private static RedirectedProcessContext? ReadRedirectedProcessContext(
+        Titanium.Web.Proxy.Http.Request? request)
+    {
+        if (request == null)
+            return null;
+
+        string? pidText = request.Headers.GetFirstHeader(RedirectPidHeader)?.Value;
+        string? token = request.Headers.GetFirstHeader(RedirectTokenHeader)?.Value;
+        request.Headers.RemoveHeader(RedirectPidHeader);
+        request.Headers.RemoveHeader(RedirectTokenHeader);
+
+        return int.TryParse(pidText, out int pid) && pid > 0 && Services.Redirector.IsValidToken(token)
+            ? new RedirectedProcessContext(pid)
+            : null;
+    }
+
+    public void RecordRawTunnel(int pid, IPAddress originAddress, int originPort)
+    {
+        string authority = originAddress.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6
+            ? $"[{originAddress}]:{originPort}"
+            : $"{originAddress}:{originPort}";
+        var process = ProcessInfo.Get(pid);
+        var entry = new TrafficEntry
+        {
+            Id = NextExchangeId(),
+            Time = DateTime.Now,
+            Pid = pid,
+            Process = process.Name,
+            ProcessPath = process.Path,
+            Method = "CONNECT",
+            Scheme = "tcp",
+            Host = authority,
+            HostName = originAddress.ToString(),
+            Path = "(undecrypted tunnel)",
+            Url = $"tcp://{authority}",
+            StartTicks = Stopwatch.GetTimestamp(),
+            Outcome = "Tunnel",
+            Completed = true
+        };
+        Services.Traffic.Enqueue(entry);
+        NotifyExchangeUpdated(entry);
     }
 
     private static string HeadersText(IEnumerable<HttpHeader> headers)
@@ -409,7 +456,10 @@ public sealed class ProxyService : IDisposable
         {
             var uri = e.HttpClient.Request.RequestUri;
             string host = uri.Host;
-            int pid = GetPid(e);
+            var context = ReadRedirectedProcessContext(e.HttpClient.ConnectRequest);
+            if (context != null)
+                e.UserData = context;
+            int pid = context?.Pid ?? GetPid(e);
             var pi = ProcessInfo.Get(pid);
 
             bool bypass = Services.Settings.BypassList.Any(p => Glob.IsMatch(p, host));
@@ -456,7 +506,8 @@ public sealed class ProxyService : IDisposable
         {
             var req = e.HttpClient.Request;
             var uri = req.RequestUri;
-            int pid = GetPid(e);
+            var context = e.UserData as RedirectedProcessContext ?? ReadRedirectedProcessContext(req);
+            int pid = context?.Pid ?? GetPid(e);
             var pi = ProcessInfo.Get(pid);
 
             entry = new TrafficEntry

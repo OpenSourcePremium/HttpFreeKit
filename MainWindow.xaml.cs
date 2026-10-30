@@ -476,6 +476,16 @@ public partial class MainWindow : Window
             int port = Services.Settings.Port;
             var upstream = SystemProxyManager.GetOriginalUpstream();
             Services.Proxy.Start(port, upstream);
+
+            if (Services.Settings.CaptureAllProcesses && !Services.Redirector.Start())
+            {
+                AppDialog.Show(this, LocalizationService.Format(
+                        "Driver capture could not start; system proxy capture remains active.\n\n{0}",
+                        Services.Settings.Language, Services.Redirector.LastError ?? ""),
+                    LocalizationService.Translate("All-process capture unavailable", Services.Settings.Language),
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
             SystemProxyManager.Enable($"127.0.0.1:{port}");
 
 
@@ -506,6 +516,7 @@ public partial class MainWindow : Window
 
     private void Revert()
     {
+        try { Services.Redirector.Stop(); } catch { }
         try { SystemProxyManager.Restore(); } catch { }
         try { EnvironmentManager.Restore(); } catch { }
         try { Services.Proxy.Stop(); } catch { }
@@ -516,6 +527,7 @@ public partial class MainWindow : Window
     private void StopCapture()
     {
 
+        try { Services.Redirector.Stop(); } catch { }
         try { SystemProxyManager.Restore(); } catch { }
         try { EnvironmentManager.Restore(); } catch { }
         try { Services.Proxy.Stop(); } catch { }

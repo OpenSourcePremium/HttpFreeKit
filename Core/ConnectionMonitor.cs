@@ -137,6 +137,83 @@ public sealed class ConnectionMonitor
         return ip.AddressFamily == AddressFamily.InterNetworkV6 ? $"[{ip}]:{port}" : $"{ip}:{port}";
     }
 
+    public static int FindTcpPid(IPAddress localAddress, int localPort, IPAddress remoteAddress, int remotePort)
+    {
+        localAddress = NormalizeAddress(localAddress);
+        remoteAddress = NormalizeAddress(remoteAddress);
+        int af = localAddress.AddressFamily == AddressFamily.InterNetworkV6 ? 23 : 2;
+        var data = GetTable(true, af);
+        if (data == null) return -1;
+
+        int count = I32(data, 0);
+        bool ipv6 = af == 23;
+        int rowSize = ipv6 ? 56 : 24;
+        for (int i = 0; i < count; i++)
+        {
+            int offset = 4 + i * rowSize;
+            if (offset + rowSize > data.Length) break;
+
+            IPAddress local;
+            IPAddress remote;
+            int localPortValue;
+            int remotePortValue;
+            int pid;
+            if (!ipv6)
+            {
+                local = new IPAddress(data.AsSpan(offset + 4, 4));
+                localPortValue = Port(data, offset + 8);
+                remote = new IPAddress(data.AsSpan(offset + 12, 4));
+                remotePortValue = Port(data, offset + 16);
+                pid = I32(data, offset + 20);
+            }
+            else
+            {
+                local = new IPAddress(data.AsSpan(offset, 16));
+                localPortValue = Port(data, offset + 20);
+                remote = new IPAddress(data.AsSpan(offset + 24, 16));
+                remotePortValue = Port(data, offset + 44);
+                pid = I32(data, offset + 52);
+            }
+
+            if (localPortValue == localPort && remotePortValue == remotePort &&
+                NormalizeAddress(local).Equals(localAddress) &&
+                NormalizeAddress(remote).Equals(remoteAddress))
+                return pid;
+        }
+
+        return -1;
+    }
+
+    public static int FindUdpPid(IPAddress localAddress, int localPort)
+    {
+        localAddress = NormalizeAddress(localAddress);
+        int af = localAddress.AddressFamily == AddressFamily.InterNetworkV6 ? 23 : 2;
+        var data = GetTable(false, af);
+        if (data == null) return -1;
+
+        int count = I32(data, 0);
+        bool ipv6 = af == 23;
+        int rowSize = ipv6 ? 28 : 12;
+        for (int i = 0; i < count; i++)
+        {
+            int offset = 4 + i * rowSize;
+            if (offset + rowSize > data.Length) break;
+
+            IPAddress local = ipv6
+                ? new IPAddress(data.AsSpan(offset, 16))
+                : new IPAddress(data.AsSpan(offset, 4));
+            int port = Port(data, offset + (ipv6 ? 20 : 4));
+            int pid = I32(data, offset + (ipv6 ? 24 : 8));
+            if (port == localPort && NormalizeAddress(local).Equals(localAddress))
+                return pid;
+        }
+
+        return -1;
+    }
+
+    private static IPAddress NormalizeAddress(IPAddress address)
+        => address.IsIPv4MappedToIPv6 ? address.MapToIPv4() : address;
+
     private static void ReadTcp(List<Snap> list, int af)
     {
         var d = GetTable(true, af);

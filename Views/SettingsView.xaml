@@ -186,6 +186,87 @@
             </Border>
 
 
+            <TextBlock Text="CAPTURE DE TOUS LES PROCESSUS" Style="{StaticResource SectionTitle}"/>
+            <Border Style="{StaticResource SettingsCard}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Capturer tous les processus (pilote)" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Mode facultatif : WinDivert redirige les connexions TCP directes vers le proxy. Le proxy système et les variables d’environnement restent actifs. Les connexions redirigées sont réinitialisées à l’arrêt de la capture."/>
+                        </StackPanel>
+                        <ui:ToggleSwitch x:Name="CaptureAllProcessesToggle" Grid.Column="1" VerticalAlignment="Center"
+                                         OnContent="" OffContent="" Toggled="CaptureAllProcesses_Toggled"/>
+                    </Grid>
+                    <TextBlock x:Name="DriverStatusText" Style="{StaticResource RowDesc}" Margin="0,8,0,0"/>
+
+                    <Border Style="{StaticResource Divider}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Ports TCP à capturer" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Liste séparée par des virgules. Les autres ports restent inchangés."/>
+                        </StackPanel>
+                        <TextBox x:Name="RedirectPortsBox" Grid.Column="1" Width="190"
+                                 HorizontalContentAlignment="Center"
+                                 ui:ControlHelper.PlaceholderText="Ex. : 80,443,8080,8443"/>
+                    </Grid>
+
+                    <Border Style="{StaticResource Divider}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Port du relais local" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Port d’écoute interne du relais WinDivert ; différent du port du proxy."/>
+                        </StackPanel>
+                        <TextBox x:Name="RedirectPortBox" Grid.Column="1" Width="90"
+                                 HorizontalContentAlignment="Center"/>
+                    </Grid>
+
+                    <Border Style="{StaticResource Divider}"/>
+
+                    <TextBlock Text="Processus à exclure (.exe, un par ligne)" Style="{StaticResource RowTitle}"/>
+                    <TextBlock Style="{StaticResource RowDesc}"
+                               Text="Ces processus ne sont pas redirigés. Saisissez des noms de fichier, par exemple updater.exe."/>
+                    <TextBox x:Name="ExcludedProcessesBox" Margin="0,8,0,0" MinHeight="64" AcceptsReturn="True"
+                             TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" FontFamily="Consolas"/>
+
+                    <Border Style="{StaticResource Divider}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,24,0" VerticalAlignment="Center">
+                            <TextBlock Text="Bloquer QUIC / HTTP/3" Style="{StaticResource RowTitle}"/>
+                            <TextBlock Style="{StaticResource RowDesc}"
+                                       Text="Bloque UDP/443 des autres processus afin de les faire basculer sur TCP."/>
+                        </StackPanel>
+                        <ui:ToggleSwitch x:Name="BlockQuicToggle" Grid.Column="1" VerticalAlignment="Center"
+                                         OnContent="" OffContent="" Toggled="BlockQuic_Toggled"/>
+                    </Grid>
+
+                    <Button Content="Enregistrer la configuration du pilote" Click="SaveRedirectorSettings_Click"
+                            Margin="0,12,0,0" HorizontalAlignment="Right"/>
+                </StackPanel>
+            </Border>
+
+
             <TextBlock Text="RÉSEAU" Style="{StaticResource SectionTitle}"/>
             <Border Style="{StaticResource SettingsCard}">
                 <StackPanel>

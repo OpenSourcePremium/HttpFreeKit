@@ -19,6 +19,7 @@ public static class Uninstaller
 
         Step("Proxy system restored", SystemProxyManager.Restore);
         Step("Environment variables restored", EnvironmentManager.Restore);
+        Step("WinDivert driver service removed", RemoveWinDivertService);
         Step("Windows Firewall rules removed", () => new FirewallStore().UnblockAll(includeUnknown: true));
         Step("Root certificate removed", CertificateService.RemoveFromStore);
 
@@ -51,5 +52,38 @@ public static class Uninstaller
             });
 
         return log.ToString();
+    }
+
+    private static void RemoveWinDivertService()
+    {
+        int query = RunSc("query", "WinDivert");
+        if (query == 1060)
+            return;
+        if (query != 0)
+            throw new InvalidOperationException($"sc.exe query failed with Windows error {query}.");
+
+        int stop = RunSc("stop", "WinDivert");
+        if (stop is not 0 and not 1060 and not 1062)
+            throw new InvalidOperationException($"sc.exe stop failed with Windows error {stop}.");
+
+        int delete = RunSc("delete", "WinDivert");
+        if (delete is not 0 and not 1060 and not 1072)
+            throw new InvalidOperationException($"sc.exe delete failed with Windows error {delete}.");
+    }
+
+    private static int RunSc(params string[] arguments)
+    {
+        var startInfo = new ProcessStartInfo("sc.exe")
+        {
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+        foreach (string argument in arguments)
+            startInfo.ArgumentList.Add(argument);
+
+        using var process = Process.Start(startInfo)
+            ?? throw new InvalidOperationException("Unable to start sc.exe.");
+        process.WaitForExit();
+        return process.ExitCode;
     }
 }

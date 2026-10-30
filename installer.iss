@@ -1,4 +1,4 @@
-#define MyAppVersion "0.1.1"
+#define MyAppVersion "0.1.2"
 
 [Setup]
 AppId={{A7C2C5D1-9B9C-4D8A-A13E-61B7F0348D20}
@@ -28,6 +28,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 [Files]
 Source: "dist\HTTP FreeKit.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "THIRD-PARTY-NOTICES.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "dist\WinDivert-LICENSE.txt"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\HTTP FreeKit"; Filename: "{app}\HTTP FreeKit.exe"

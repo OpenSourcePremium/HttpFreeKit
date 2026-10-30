@@ -56,7 +56,7 @@ HTTP FreeKit is a Windows application for capturing, inspecting, and testing HTT
 
 | Feature | Details |
 |---|---|
-| **HTTP(S) capture** | Through the Windows system proxy: requests, responses, headers, timings, and available bodies in a live traffic log. |
+| **HTTP(S) capture** | Through the Windows system proxy, with an optional WinDivert driver mode for direct TCP connections from other processes. |
 | **Exchange inspection** | Text and JSON previews, plus a hexadecimal view for available binary data. |
 | **Search filters** | Combinable filters such as `statuscode:200 host:example.com path:/login`. |
 | **HAR 1.2 import/export** | Known sensitive header values can be redacted on export (URLs and bodies are *not* redacted). |
@@ -66,7 +66,7 @@ HTTP FreeKit is a Windows application for capturing, inspecting, and testing HTT
 | **Customizable UI** | Multiple languages and themes. |
 | **Automatic updates** | Checks all published GitHub releases and offers the newest version above the installed version. |
 
-> **Capture coverage:** only applications that use the Windows system proxy can be inspected. HTTPS connections that cannot be decrypted remain tunnels.
+> **Capture coverage:** the default mode captures applications that use the Windows system proxy. The optional **Capture all processes (driver)** mode also redirects configured TCP ports for direct connections. HTTPS connections excluded by host or a Passthrough rule remain tunnels; protocols that cannot be identified are relayed as raw TCP.
 
 ## Requirements
 
@@ -88,6 +88,25 @@ Download and run a [published release](https://github.com/OpenSourcePremium/Http
 
 To avoid inspecting a host used by an application with certificate pinning, add it to the list of hosts excluded from HTTPS decryption. Its HTTPS traffic will then pass through as a tunnel.
 
+### Optional all-process capture
+
+The driver mode is opt-in and does not replace the system proxy or environment-variable capture. In **Settings → Capture all processes (driver)**, enable the option, choose TCP destination ports, and optionally exclude executable names. **Block QUIC / HTTP/3** drops UDP/443 from other processes so they can fall back to TCP.
+
+The x64 WinDivert 2.2.2 binaries from the official release are embedded in the single-file executable and extracted beside it when driver capture starts. The portable distribution contains the executable and license notices; no separate driver files are required. If WinDivert cannot load, HTTP FreeKit reports the reason and continues in system-proxy-only mode. The driver handle is tied to the app process, so a process crash stops redirection; connections already redirected are reset when capture stops. A forced app termination does not run HTTP FreeKit's system-proxy/environment restoration handlers; use `--cleanup` if those settings remain after a forced termination.
+
+Processes listed under driver exclusions are neither redirected nor blocked by the QUIC/HTTP/3 filter. If a VPN provides system DNS through its own UDP/443 transport (for example, Cloudflare WARP), add its executable to the exclusions so DNS continues to work while QUIC is blocked for other applications.
+
+### Manual acceptance checks
+
+Run these checks on a test machine with the driver option enabled and the root certificate trusted. Confirm the request's **Process** value and inspect the captured body in **Traffic**:
+
+1. Run `curl --noproxy "*" https://example.com`. Also send the same URL with a C# `HttpClientHandler { UseProxy = false }` and Python `requests.Session()` with `trust_env = False`. Each request should appear with its originating executable and decrypted response body.
+2. Add a temporary matching rule and exercise each action: Mock, Block, Redirect, RewriteUrl, SetHeader, ReplaceBody, Delay, and Breakpoint. Confirm the displayed rule/outcome and the resulting response or request modification.
+3. Add a test host to the HTTPS bypass list, then remove it and test a matching Passthrough rule. Both should work without decryption and appear as `CONNECT` tunnels.
+4. Use `ncat` against a controlled non-HTTP TCP service listening on a configured port (including 443, if available). Send and receive a test payload; it should be relayed unchanged and logged as an undecrypted tunnel.
+5. Compare CPU use and page-load time with the mode disabled, then repeat with it enabled. Check that CPU use remains stable and ordinary browsing still works.
+6. Stop capture and verify direct and system-proxy traffic work again. Separately, force-terminate the app and verify direct traffic; if Windows still has the app's system proxy or environment values set, run `HTTP FreeKit.exe --cleanup` to restore them.
+
 ## Search filter examples
 
 ```text
@@ -107,16 +126,10 @@ dotnet build .\HttpFreeKit.csproj -c Release
 To publish a self-contained Windows x64 executable:
 
 ```powershell
-dotnet publish .\HttpFreeKit.csproj -c Release -r win-x64 --self-contained true `
-  -p:PublishSingleFile=true `
-  -p:IncludeNativeLibrariesForSelfExtract=true `
-  -p:EnableCompressionInSingleFile=true `
-  -p:DebugType=None `
-  -p:DebugSymbols=false `
-  -o .\dist
+.\publish.cmd
 ```
 
-The `publish.cmd` script also provides the project's publish command.
+The included driver binaries and license are from the official [WinDivert 2.2.2 x64 release](https://github.com/basil00/WinDivert/releases/tag/v2.2.2). Run `publish.cmd` before compiling `installer.iss` with Inno Setup. The installer includes the executable and license notices; the driver binaries are embedded in the executable and extracted beside it when driver capture starts.
 
 ## Data and security
 

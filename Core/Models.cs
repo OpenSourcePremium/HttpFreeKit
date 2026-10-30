@@ -229,6 +229,11 @@ public sealed class FirewallEntry : ObservableObject
 public sealed class AppSettings
 {
     public int Port { get; set; } = 8866;
+    public bool CaptureAllProcesses { get; set; }
+    public int RedirectPort { get; set; } = 8867;
+    public string RedirectPorts { get; set; } = "80,443,8080,8443";
+    public bool BlockQuic { get; set; } = true;
+    public List<string> ExcludedProcesses { get; set; } = [];
     public bool AutoCapture { get; set; }
     public bool SetEnvVars { get; set; } = true;
     public bool DiscordPresence { get; set; } = true;
