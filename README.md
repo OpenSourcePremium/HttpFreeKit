@@ -1,8 +1,7 @@
 <h1 align="center">
-  <img src="Assets/app.png" alt="" width="64" height="64"><br>
+  <img src="Assets/app.png" alt="" width="48" height="48" align="top">
   HTTP FreeKit<br>
-  <sub><a href="https://httpfreekit.com">Website</a></sub><br>
-  <img src="Assets/app.png" alt="" width="1" height="24">
+  <sub><a href="https://httpfreekit.com">Website</a></sub>
 </h1>
 
 <p align="center"><img src="https://httpfreekit.com/img/app-en.png?v=1" alt="HTTP FreeKit screenshot" width="900"></p>
