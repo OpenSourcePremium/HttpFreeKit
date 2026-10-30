@@ -4,7 +4,7 @@
   <sub><a href="https://httpfreekit.com">Website</a></sub>
 </h1>
 
-<img src="Assets/app.png" alt="" width="1" height="1" align="top">
+<img src="Assets/app.png" alt="" width="1" height="1">
 
 <p align="center"><img src="https://httpfreekit.com/img/app-en.png?v=1" alt="HTTP FreeKit screenshot" width="900"></p>
 
