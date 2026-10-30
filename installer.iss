@@ -1,9 +1,9 @@
-#define MyAppVersion "0.1.2"
+#define HttpFreeKitVersion "0.1.2"
 
 [Setup]
 AppId={{A7C2C5D1-9B9C-4D8A-A13E-61B7F0348D20}
 AppName=HTTP FreeKit
-AppVersion={#MyAppVersion}
+AppVersion={#HttpFreeKitVersion}
 AppPublisher=OpenSourcePremium
 DefaultDirName={localappdata}\Programs\HTTP FreeKit
 DisableDirPage=no
@@ -12,7 +12,7 @@ DisableProgramGroupPage=yes
 Uninstallable=yes
 PrivilegesRequired=admin
 OutputDir=dist\installer
-OutputBaseFilename=HTTP-FreeKit-Setup-{#MyAppVersion}-win-x64
+OutputBaseFilename=HTTP-FreeKit-Setup-{#HttpFreeKitVersion}-win-x64
 SetupIconFile=Assets\app.ico
 UninstallDisplayIcon={app}\HTTP FreeKit.exe
 LicenseFile=LICENSE
