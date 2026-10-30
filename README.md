@@ -2,8 +2,9 @@
   <img src="Assets/app.png" alt="" width="48" height="48" align="top">
   HTTP FreeKit<br>
   <sub><a href="https://httpfreekit.com">Website</a></sub>
-  <img src="Assets/app.png" alt="" width="1" height="1" align="top">
 </h1>
+
+<img src="Assets/app.png" alt="" width="1" height="1" align="top">
 
 <p align="center"><img src="https://httpfreekit.com/img/app-en.png?v=1" alt="HTTP FreeKit screenshot" width="900"></p>
 
